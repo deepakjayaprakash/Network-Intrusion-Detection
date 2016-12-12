@@ -1,0 +1,236 @@
+
+
+## Building the model using random forest classifier
+
+```{r}
+library(randomForest)
+library(caret)
+library(e1071)
+
+
+```
+## creating one more temporary table called kddcopy modifying result column of that to labels
+#number of attributes: 6 training data size: 1262 , testing data size: 124711
+
+```{r}
+data1<-kddcopy[,c("srv_rerror_rate",   "rerror_rate", "flag",  "dst_host_rerror_rate", "logged_in", "protocol_type","result" )] 
+
+
+inTrain <- createDataPartition(y=data1$result,p=0.01, list=FALSE)
+training <- data1[inTrain,]
+testing <- data1[-inTrain,]
+dim(training)
+
+
+
+modFit <- train(result ~ .,method="rf",data=training)
+modFit
+
+
+pred <- predict(modFit,testing) 
+testing$predRight <- pred==testing$result
+answer<-table(pred,testing$result)
+round(prop.table(answer,1)*100,2)
+
+```
+ Output:
+>answer
+        
+
+
+pred       dos normal probe   r2l   u2r
+  dos    41277   2377   576     0     0
+  normal  1231  62162  1209   928    51
+  probe   2959   2130  9754    57     0
+  r2l        0      0     0     0     0
+  u2r        0      0     0     0     0
+> round(prop.table(answer,1)*100,2)
+        
+pred       dos normal probe   r2l   u2r
+  dos    93.32   5.37  1.30  0.00  0.00
+  normal  1.88  94.79  1.84  1.42  0.08
+  probe  19.86  14.30 65.46  0.38  0.00
+  r2l                                  
+  u2r 
+
+#number of attributes: 5 training data size: 1262 , testing data size: 124711
+
+
+```{r}
+
+data1<-kddcopy[,c("srv_rerror_rate",   "rerror_rate", "flag",  "dst_host_rerror_rate", "logged_in","result" )] 
+
+
+inTrain <- createDataPartition(y=data1$result,p=0.01, list=FALSE)
+training <- data1[inTrain,]
+testing <- data1[-inTrain,]
+dim(training)
+
+
+
+modFit <- train(result ~ .,method="rf",data=training)
+modFit
+
+
+pred <- predict(modFit,testing) 
+testing$predRight <- pred==testing$result
+answer<-table(pred,testing$result)
+round(prop.table(answer,1)*100,2)
+
+```
+        
+pred       dos normal probe   r2l   u2r
+  dos    93.04   5.41  1.55  0.00  0.00
+  normal  5.44  86.20  7.03  1.26  0.07
+  probe   3.05  10.85 85.29  0.81  0.00
+  r2l                                  
+  u2r
+
+
+#readin test data
+#number of attributes: 6 training data size: 12600 , testing data size: 113373
+```{r}
+data1<-kddcopy[,c("srv_rerror_rate",   "rerror_rate", "flag",  "dst_host_rerror_rate", "logged_in","result" )] 
+
+
+inTrain <- createDataPartition(y=data1$result,p=0.1, list=FALSE)
+training <- data1[inTrain,]
+testing <- data1[-inTrain,]
+dim(training)
+
+
+
+modFit <- train(result ~ .,method="rf",data=training)
+modFit
+
+
+pred <- predict(modFit,testing) 
+testing$predRight <- pred==testing$result
+answer<-table(pred,testing$result)
+round(prop.table(answer,1)*100,2)
+
+```
+
+pred       dos normal probe   r2l   u2r
+  dos    94.32   5.23  0.45  0.00  0.00
+  normal  5.23  86.31  7.13  1.26  0.07
+  probe   6.91   7.76 85.13  0.19  0.02
+  r2l     0.00   0.00 23.40 76.60  0.00
+  
+
+
+
+#number of attributes: 6 training data size: 25197 , testing data size: 100776
+
+
+```{r}
+data1<-kddcopy[,c("srv_rerror_rate",   "rerror_rate", "flag",  "dst_host_rerror_rate", "logged_in","result" )] 
+
+
+inTrain <- createDataPartition(y=data1$result,p=0.2, list=FALSE)
+training <- data1[inTrain,]
+testing <- data1[-inTrain,]
+dim(training)
+
+
+
+modFit <- train(result ~ .,method="rf",data=training)
+modFit
+
+
+pred <- predict(modFit,testing) 
+testing$predRight <- pred==testing$result
+answer<-table(pred,testing$result)
+round(prop.table(answer,1)*100,8)
+
+```
+TIme taken:  11:50 to 12:18
+pred       dos normal probe   r2l   u2r
+  dos    94.31   5.25  0.44  0.00  0.00
+  normal  5.13  86.36  7.17  1.26  0.07
+  probe   7.18   6.18 86.55  0.09  0.00
+  r2l     0.00   3.64 32.73 63.64  0.00
+  u2r  
+  
+
+#number of attributes: 9 training data size: 12600 , testing data size: 113373
+  
+```{r}
+data1<-kddcopy[,c("srv_rerror_rate",  "protocol_type" ,"src_bytes", "rerror_rate", "flag",  "dst_host_rerror_rate", "logged_in","result","service"  ,"serror_rate"    )] 
+
+
+inTrain <- createDataPartition(y=data1$result,p=0.1, list=FALSE)
+training <- data1[inTrain,]
+testing <- data1[-inTrain,]
+dim(training)
+
+
+
+modFit <- train(result ~ .,method="rf",data=training)
+modFit
+
+
+pred <- predict(modFit,testing) 
+testing$predRight <- pred==testing$result
+answer<-table(pred,testing$result)
+round(prop.table(answer,1)*100,2)
+
+```
+pred       dos normal probe   r2l   u2r
+  dos    98.92   0.53  0.55  0.00  0.00
+  normal  0.36  98.86  0.23  0.47  0.07
+  probe   0.00   2.37 97.54  0.07  0.02
+  r2l     0.00   6.86  0.00 93.14  0.00
+  u2r
+
+#number of attributes: 9 training data size: 12625 , testing data size: 124711 and test data as test.final 
+
+
+```{r}
+data1<-kddcopy[,c("srv_rerror_rate",  "protocol_type" ,"src_bytes", "rerror_rate", "flag",  "dst_host_rerror_rate", "logged_in","result","service"  ,"serror_rate"    )] 
+
+
+inTrain <- createDataPartition(y=data1$result,p=0.1, list=FALSE)
+training <- data1[inTrain,]
+testing <- data1[-inTrain,]
+dim(training)
+
+
+
+modFit <- train(result ~ .,method="rf",data=training)
+modFit
+
+
+pred <- predict(modFit,test.final) 
+testing$predRight <- pred==test.final$result
+answer<-table(pred,test.final$result)
+round(prop.table(answer,1)*100,2)
+
+```
+
+1262 samples
+   9 predictor
+   5 classes: 'dos', 'normal', 'probe', 'r2l', 'u2r' 
+
+No pre-processing
+Resampling: Bootstrapped (25 reps) 
+Summary of sample sizes: 1262, 1262, 1262, 1262, 1262, 1262, ... 
+Resampling results across tuning parameters:
+
+  mtry  Accuracy   Kappa    
+   2    0.8523705  0.7218909
+  44    0.9785942  0.9623108
+  87    0.9752067  0.9568197
+
+Accuracy was used to select the optimal model using  the largest value.
+The final value used for the model was mtry = 44. 
+
+> round(prop.table(answer,1)*100,2)
+        
+pred       dos normal probe   r2l   u2r
+  dos    96.82   1.68  1.50  0.00  0.00
+  normal  0.75  80.21  0.23 18.50  0.31
+  probe  23.09  12.35 64.49  0.06  0.00
+  r2l     0.00  10.71  0.00 89.29  0.00
+  u2r 
+  

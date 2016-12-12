@@ -1,0 +1,64 @@
+
+
+## Plotting some scatterplots to see if there exists dependancy between attributes and the attack type
+
+```{r}
+library(ggplot2)
+
+
+```
+## creating one more temporary table called kddcopy modifying result column of that to labels
+
+```{r}
+
+qplot(dst_host_same_src_port_rate,dst_host_srv_diff_host_rate,colour=result,data=kddcopy)
+ # Observation: dst_host_same_src_port_rate has slight effect on the intrusion type.
+ 
+ 
+qplot(service,flag,colour=result,data=kddcopy)
+# Observation: "flag" is a strong predictor. for flag= "REG" and "S0" it is "dos"
+
+
+
+qplot(duration,src_bytes,colour=result,data=kddcopy) 
+# Observation: For duration Greater than 30000 we can see it's 'probe'
+# Therefore duration itself is a strong predictor
+
+
+
+qplot(serror_rate,srv_serror_rate,colour=result,data=kddcopy)
+
+# Observation: For serror_rate and srv_serror_rate=0 or 1 its "dos" and
+# serror_rate between 0.25 to 0.5 its "probe""
+
+
+
+
+```
+
+
+Forming tables
+```{r}
+flag_vs_res=table(kddcopy$flag,kddcopy$result)
+protocoltype_vs_res=table(kddcopy$protocol_type,kddcopy$result)
+
+```
+
+> protocoltype_vs_res
+      
+         dos normal probe   r2l   u2r
+  icmp  2847   1309  4135     0     0
+  tcp  42188  53600  5857   995    49
+  udp    892  12434  1664     0     3
+  
+```{r}
+flag_dt <- ctree( result ~ flag ,  data = kddcopy)
+ plot(flag_dt)
+ 
+ duration_dt <- ctree( result ~ flag+protocol_type+logged_in ,  data = kddcopy)
+ plot(duration_dt)
+```
+
+
+
+

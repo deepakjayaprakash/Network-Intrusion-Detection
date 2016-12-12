@@ -1,0 +1,149 @@
+#renaming the columns of the dataset
+```{r}
+colnames(data) = c("duration", "protocol_type", "service", "flag", "src_bytes", "dst_bytes", "land", 
+                   "wrong_fragment", "urgent", "hot", "num_failed_logins", "logged_in", 
+                   "num_compromised", "root_shell", "su_attempted", "num_root", "num_file_creations", 
+                   "num_shells", "num_access_files", "num_outbound_cmds", "is_hot_login","is_guest_login", 
+                   "count", "srv_count", "serror_rate", "srv_serror_rate", "rerror_rate","srv_rerror_rate", "same_srv_rate", "diff_srv_rate",                         "srv_diff_host_rate", "dst_host_count","dst_host_srv_count","dst_host_same_srv_rate", "dst_host_diff_srv_rate",                                    "dst_host_same_src_port_rate", "dst_host_srv_diff_host_rate", "dst_host_serror_rate","dst_host_srv_serror_rate", 
+                   "dst_host_rerror_rate", "dst_host_srv_rerror_rate", "result")
+                   
+                   
+    ```               
+## Labelling the attacks as dos, probe, u2r or r2l. res2 has labels approach 1
+
+```{r}
+for(i in 1:125973)
+  {
+  if(res[i]=="normal")
+    res2[i]="normal"
+  
+  else if(res[i]=="neptune" | res[i]=="back" | res[i]=="land" | res[i]=="pod" | res[i]=="portsweep" | res[i]=="smurf" | res[i]=="teardrop" )
+    res2[i]="dos"
+  
+  else if(res[i]=="ipsweep" | res[i]=="portsweep" | res[i]=="nmap" | res[i]=="satan" )
+    res2[i]="probe"
+  
+ else if(res[i]=="buffer_overflow" | res[i]=="loadmodule" | res[i]=="perl" | res[i]=="rootkit")
+    res2[i]="u2r"
+ 
+ else if(res[i]=="ftp_write" | res[i]=="guess_passwd" | res[i]=="imap" | res[i]=="multihop"| res[i]=="phf" | res[i]=="spy" | res[i]=="warezclient" | res[i]=="warezmaster" )
+    res2[i]="r2l"
+    }
+  
+```
+## creating one more temporary table called kddcopy modifying result column of that to labels
+
+```{r}
+kddcopy$result = as.character(kddcopy$result)
+kddcopy$result[kddcopy$result == "ipsweep"] = "probe"
+kddcopy$result[kddcopy$result == "portsweep"] = "probe"
+kddcopy$result[kddcopy$result == "nmap"] = "probe"
+kddcopy$result[kddcopy$result == "satan"] = "probe"
+
+kddcopy$result[kddcopy$result == "buffer_overflow"] = "u2r"
+kddcopy$result[kddcopy$result == "loadmodule"] = "u2r"
+kddcopy$result[kddcopy$result == "perl"] = "u2r"
+kddcopy$result[kddcopy$result == "rootkit"] = "u2r"
+
+kddcopy$result[kddcopy$result == "back"] = "dos"
+kddcopy$result[kddcopy$result == "land"] = "dos"
+kddcopy$result[kddcopy$result == "neptune"] = "dos"
+kddcopy$result[kddcopy$result == "pod"] = "dos"
+kddcopy$result[kddcopy$result == "smurf"] = "dos"
+kddcopy$result[kddcopy$result == "teardrop"] = "dos"
+
+kddcopy$result[kddcopy$result == "ftp_write"] = "r2l"
+kddcopy$result[kddcopy$result == "guess_passwd"] = "r2l"
+kddcopy$result[kddcopy$result == "imap"] = "r2l"
+kddcopy$result[kddcopy$result == "multihop"] = "r2l"
+kddcopy$result[kddcopy$result == "phf"] = "r2l"
+kddcopy$result[kddcopy$result == "spy"] = "r2l"
+kddcopy$result[kddcopy$result == "warezclient"] = "r2l"
+kddcopy$result[kddcopy$result == "warezmaster"] = "r2l"
+
+kddcopy$result[kddcopy$result == "normal"] = "normal"
+data$result = as.factor(data$result)
+  
+```
+
+#testing data labelled under 4 categories
+```{r}
+testing$result = as.character(testing$result)
+testing$result[testing$result == "ipsweep"] = "probe"
+testing$result[testing$result == "portsweep"] = "probe"
+testing$result[testing$result == "nmap"] = "probe"
+testing$result[testing$result == "satan"] = "probe"
+
+testing$result[testing$result == "buffer_overflow"] = "u2r"
+testing$result[testing$result == "loadmodule"] = "u2r"
+testing$result[testing$result == "perl"] = "u2r"
+testing$result[testing$result == "rootkit"] = "u2r"
+
+testing$result[testing$result == "back"] = "dos"
+testing$result[testing$result == "land"] = "dos"
+testing$result[testing$result == "neptune"] = "dos"
+testing$result[testing$result == "pod"] = "dos"
+testing$result[testing$result == "smurf"] = "dos"
+testing$result[testing$result == "teardrop"] = "dos"
+
+testing$result[testing$result == "ftp_write"] = "r2l"
+testing$result[testing$result == "guess_passwd"] = "r2l"
+testing$result[testing$result == "imap"] = "r2l"
+testing$result[testing$result == "multihop"] = "r2l"
+testing$result[testing$result == "phf"] = "r2l"
+testing$result[testing$result == "spy"] = "r2l"
+testing$result[testing$result == "warezclient"] = "r2l"
+testing$result[testing$result == "warezmaster"] = "r2l"
+
+testing$result[testing$result == "normal"] = "normal"
+
+#test.final<-testing[(testing$result=="dos" | testing$result=="u2r" | testing$result=="r2l" | testing$result=="normal" |testing$result=="probe"), ]
+test.final$result = as.factor(test.final$result)  
+```
+
+attacks which were not in the training set
+apache2- dos
+mailbomb- dos
+httptunnel-r2l
+mscan-probe
+processtable-dos
+ps-u2r
+sendmail-r2l
+snpget,snpguess-r2l
+saint,sqlattack-u2r
+udpstorm-dos
+worm-dos
+xlock-r2l
+xterm-u2r
+xsnop-r2l
+
+#labelling these attacks
+```{r}
+testing$result = as.character(testing$result)
+testing$result[testing$result == "mscan"] = "probe"
+testing$result[testing$result == "xterm"] = "u2r"
+testing$result[testing$result == "sqlattack"] = "u2r"
+testing$result[testing$result == "saint"] = "u2r"
+testing$result[testing$result == "ps"] = "u2r"
+
+testing$result[testing$result == "apache2"] = "dos"
+testing$result[testing$result == "mailbomb"] = "dos"
+testing$result[testing$result == "processtable"] = "dos"
+testing$result[testing$result == "udpstorm"] = "dos"
+testing$result[testing$result == "worm"] = "dos"
+
+testing$result[testing$result == "httptunnel"] = "r2l"
+testing$result[testing$result == "sendmail"] = "r2l"
+testing$result[testing$result == "snmpgetattack"] = "r2l"
+testing$result[testing$result == "named"] = "r2l"
+testing$result[testing$result == "snmpguess"] = "r2l"
+testing$result[testing$result == "xlock"] = "r2l"
+testing$result[testing$result == "xsnoop"] = "r2l"
+
+
+#test.final<-testing[(testing$result=="dos" | testing$result=="u2r" | testing$result=="r2l" | testing$result=="normal" |testing$result=="probe"), ]
+test.final<-testing
+test.final$result = as.factor(test.final$result)  
+summary(test.final$result)
+```
+

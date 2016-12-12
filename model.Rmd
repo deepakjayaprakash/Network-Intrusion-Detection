@@ -1,0 +1,156 @@
+
+
+## Building the model
+
+```{r}
+library(randomForest)
+library(caret)
+library(e1071)
+
+
+```
+## creating one more temporary table called kddcopy modifying result column of that to labels
+
+```{r}
+
+
+```
+ Output:
+>answer
+        
+
+
+
+```{r}
+#New approach 
+  # Clean up near zero variance features
+kddcopy2<-kddcopy
+nzvcol <- nearZeroVar(kddcopy2)
+nzvcol
+# [1]  1  6  7  8  9 10 11 13 14 15 16 17 18 19 20 21 22 29 32
+
+```
+These columns have non zero variance
+colnames(kddcopy2[nzvcol])
+ [1] "duration"           "dst_bytes"          "land"               "wrong_fragment"    
+ [5] "urgent"             "hot"                "num_failed_logins"  "num_compromised"   
+ [9] "root_shell"         "su_attempted"       "num_root"           "num_file_creations"
+[13] "num_shells"         "num_access_files"   "num_outbound_cmds"  "is_hot_login"      
+[17] "is_guest_login"     "same_srv_rate"      "dst_host_count" 
+
+
+
+```{r}
+train_raw <- kddcopy2[, -nzvcol]
+#train_raw
+names(train_raw)[dim(train_raw)[2]] <- "label" #renaming last column as label
+colnames(train_raw)
+
+```
+remaining important columns.
+
+
+ [1] "protocol_type"               "service"                     "flag"                       
+ [4] "src_bytes"                   "logged_in"                   "count"                      
+ [7] "srv_count"                   "serror_rate"                 "srv_serror_rate"            
+[10] "rerror_rate"                 "srv_rerror_rate"             "diff_srv_rate"              
+[13] "srv_diff_host_rate"          "dst_host_srv_count"          "dst_host_same_srv_rate"     
+[16] "dst_host_diff_srv_rate"      "dst_host_same_src_port_rate" "dst_host_srv_diff_host_rate"
+[19] "dst_host_serror_rate"        "dst_host_srv_serror_rate"    "dst_host_rerror_rate"       
+[22] "dst_host_srv_rerror_rate"    "result" 
+
+```{r}
+#label into factor
+training2 <- train_raw
+training2$label <- factor(training2$label)
+d <- dim(training2)
+d
+
+```
+
+
+
+readin test data
+
+```{r}
+test_raw
+
+colnames(test_raw) = c("duration", "protocol_type", "service", "flag", "src_bytes", "dst_bytes", "land", 
+                   "wrong_fragment", "urgent", "hot", "num_failed_logins", "logged_in", 
+                   "num_compromised", "root_shell", "su_attempted", "num_root", "num_file_creations", 
+                   "num_shells", "num_access_files", "num_outbound_cmds", "is_hot_login","is_guest_login", 
+                   "count", "srv_count", "serror_rate", "srv_serror_rate", "rerror_rate","srv_rerror_rate", "same_srv_rate", "diff_srv_rate",                         "srv_diff_host_rate", "dst_host_count","dst_host_srv_count","dst_host_same_srv_rate", "dst_host_diff_srv_rate",                                    "dst_host_same_src_port_rate", "dst_host_srv_diff_host_rate", "dst_host_serror_rate","dst_host_srv_serror_rate", 
+                   "dst_host_rerror_rate", "dst_host_srv_rerror_rate", "result")
+                   
+                   
+  
+# Process the data
+
+
+
+
+names(test_raw) 
+names(test_raw)[dim(test_raw)[2]] <- "label"  #chumma rename last as label
+names(training2)[dim(training2)[2]] <- "label"  #chumma rename last as label
+
+
+# Extract the same features as training data
+colnames_train <- names(training2)
+colnames_train
+
+
+test_raw <- test_raw[ , names(training2)]
+testing<-test_raw
+View(testing)
+testing$label <- as.factor(testing$label)
+
+```
+
+
+
+Building the model by using the Naive Bayes.
+
+
+```{r}
+label_result = training2[ ,d[2]]
+training_data = training2[ ,1:5]   # took only 5
+View(training_data)
+navie_bayes_tree_model = naiveBayes(as.factor(label_result)~.,
+                                    training_data)
+
+# Predict the testing
+testing_data = testing[ , 1:5] # for only 5 
+navie_bayes_pred = predict(navie_bayes_tree_model, testing_data)
+
+
+golden_answer = testing[ , d[2]]
+navie_bayes_pred = factor(navie_bayes_pred, levels =levels(golden_answer))
+
+# Get the accuracy
+NB_accuracy <- mean(golden_answer == navie_bayes_pred,na.rm = TRUE)
+NB_accuracy
+```
+
+
+Building the model by using other algorithms.
+
+```{r}
+# Decesion Tree
+library(rpart)
+
+
+decision_tree_model <- rpart(label ~ protocol_type+service+flag+src_bytes+logged_in, data = training2[1:100,], method = "class")
+#here instead of just 5 columns it must be all
+
+
+# Predicting:
+decision_tree_pred <- predict(decision_tree_model, testing_data[1:100,], type = "class")
+
+# Plot of the Decision Tree
+rpart.plot(decision_tree_model, main = "Classification Tree", 
+           extra = 102, under = TRUE, faclen = 0)
+
+# Test results on our subTesting data set:
+confusionMatrix(prediction1, subTesting$classe)
+```
+

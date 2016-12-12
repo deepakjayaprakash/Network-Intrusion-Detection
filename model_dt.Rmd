@@ -1,0 +1,211 @@
+```{r}
+library(randomForest)
+library(caret)
+library(e1071)
+library(rpart)
+library(rpart.plot)
+
+```
+
+Building the model by using Decision tree
+
+```{r}
+# Decision Tree using 5 attrbutes and 1000 training tuples and 10000 testing tuples
+
+decision_tree_model <- rpart(result ~ protocol_type+srv_rerror_rate+flag+rerror_rate+logged_in, data = training2[1:1000,], method = "class")
+
+# Predicting:
+decision_tree_pred <- predict(decision_tree_model, testing_data[1:10000,], type = "class")
+decision_tree_pred
+
+testing_data=training2[100000:125973,]
+right <- decision_tree_pred==testing_data[1:10000,"result"]
+answer<-table(decision_tree_pred,testing_data[1:10000,"result"])
+answer
+round(prop.table(answer,1)*100,2)
+
+# Plot of the Decision Tree
+rpart.plot(decision_tree_model, main = "Classification Tree", 
+           extra = 102, under = TRUE, faclen = 0)
+
+# Test results on our subTesting data set:
+confusionMatrix(prediction1, subTesting$classe)
+```
+
+                  
+decision_tree_pred  dos normal probe  r2l  u2r
+            dos    3310    242    91    5    0
+            normal  145   4936   130   76    3
+            probe   238    125   698    1    0
+            r2l       0      0     0    0    0
+            u2r       0      0     0    0    0
+> round(prop.table(answer,1)*100,2)
+                  
+decision_tree_pred   dos normal probe   r2l   u2r
+            dos    90.73   6.63  2.49  0.14  0.00
+            normal  2.74  93.31  2.46  1.44  0.06
+            probe  22.41  11.77 65.73  0.09  0.00
+            r2l                                  
+            u2r            
+
+```{r}
+# Decision Tree using 5 attrbutes and 100000 training tuples and 25974 testing 
+
+decision_tree_model <- rpart(result ~ protocol_type+srv_rerror_rate+flag+rerror_rate+logged_in, data = training2[1:100000,], method = "class")
+
+
+# Predicting:
+decision_tree_pred <- predict(decision_tree_model, testing_data[1:25974,], type = "class")
+decision_tree_pred
+
+
+right <- decision_tree_pred==testing_data[1:25974,"result"]
+answer<-table(decision_tree_pred,testing_data[1:25974,"result"])
+answer
+round(prop.table(answer,1)*100,2)
+
+# Plot of the Decision Tree
+rpart.plot(decision_tree_model, main = "Classification Tree", 
+           extra = 102, under = TRUE, faclen = 0)
+
+# Test results on our subTesting data set:
+confusionMatrix(prediction1, subTesting$classe)
+```            
+> answer
+                  
+decision_tree_pred   dos normal probe   r2l   u2r
+            dos     8484    636   200    14     0
+            normal   364  12925   357   190     9
+            probe    619    337  1836     3     0
+            r2l        0      0     0     0     0
+            u2r        0      0     0     0     0
+> round(prop.table(answer,1)*100,2)
+                  
+decision_tree_pred   dos normal probe   r2l   u2r
+            dos    90.89   6.81  2.14  0.15  0.00
+            normal  2.63  93.36  2.58  1.37  0.07
+            probe  22.15  12.06 65.69  0.11  0.00
+            r2l                                  
+            u2r 
+            
+
+
+```{r}
+# Decision Tree using 8 attrbutes and 1000 training tuples and 25974 testing 
+
+
+decision_tree_model <- rpart(result ~ protocol_type+srv_rerror_rate+flag+rerror_rate+logged_in+dst_host_rerror_rate+src_bytes+ serror_rate+rerror_rate, data = training2[1:100000,], method = "class")
+
+
+# Predicting:
+decision_tree_pred <- predict(decision_tree_model, testing_data[1:25974,], type = "class")
+decision_tree_pred
+
+
+right <- decision_tree_pred==testing_data[1:25974,"result"]
+answer<-table(decision_tree_pred,testing_data[1:25974,"result"])
+answer
+round(prop.table(answer,1)*100,2)
+
+# Plot of the Decision Tree
+rpart.plot(decision_tree_model, main = "Classification Tree", 
+           extra = 102, under = TRUE, faclen = 0)
+
+# Test results on our subTesting data set:
+confusionMatrix(prediction1, subTesting$classe)
+```       
+
+round(prop.table(answer,1)*100,2)
+                  
+decision_tree_pred   dos normal probe   r2l   u2r
+            dos    93.69   5.44  0.87  0.00  0.00
+            normal  1.47  96.55  0.43  1.50  0.05
+            probe   0.00  16.49 83.17  0.26  0.07
+            r2l                                  
+            u2r       
+         
+
+```{r}
+# Decision Tree using 8 attrbutes and 10000 training tuples and 25974 testing 
+
+
+decision_tree_model <- rpart(result ~ protocol_type+srv_rerror_rate+flag+rerror_rate+logged_in+dst_host_rerror_rate+src_bytes+ serror_rate+rerror_rate, data = training2[1:100000,], method = "class")
+
+
+# Predicting:
+decision_tree_pred <- predict(decision_tree_model, test.final, type = "class")
+decision_tree_pred
+
+
+right <- decision_tree_pred==test.final[,"result"]
+answer<-table(decision_tree_pred,test.final[,"result"])
+answer
+round(prop.table(answer,1)*100,2)
+
+# Plot of the Decision Tree
+rpart.plot(decision_tree_model, main = "Classification Tree", 
+           extra = 102, under = TRUE, faclen = 0)
+
+# Test results on our subTesting data set:
+confusionMatrix(prediction1, subTesting$classe)
+```
+answer
+                  
+decision_tree_pred  dos normal probe  r2l  u2r
+            dos    5151     82   108  187    0
+            normal  359   9226     1 1570   35
+            probe   231    402   997  442    2
+            r2l       0      0     0    0    0
+            u2r       0      0     0    0    0
+            `             
+ round(prop.table(answer,1)*100,2)
+                  
+decision_tree_pred   dos normal probe   r2l   u2r
+            dos    93.18   1.48  1.95  3.38  0.00
+            normal  3.21  82.44  0.01 14.03  0.31
+            probe  11.14  19.38 48.07 21.31  0.10
+            r2l                                  
+            u2r
+            
+            
+
+```{r}
+# Decision Tree using 5 attrbutes and 100000 training tuples and 25974 testing 
+
+decision_tree_model <- rpart(result ~ protocol_type+srv_rerror_rate+flag+rerror_rate+logged_in, data = training2[1:100000,], method = "class")
+
+
+# Predicting:
+decision_tree_pred <- predict(decision_tree_model, testing_data[1:25974,], type = "class")
+decision_tree_pred
+
+
+right <- decision_tree_pred==testing_data[1:25974,"result"]
+answer<-table(decision_tree_pred,testing_data[1:25974,"result"])
+answer
+round(prop.table(answer,1)*100,2)
+
+# Plot of the Decision Tree
+rpart.plot(decision_tree_model, main = "Classification Tree", 
+           extra = 102, under = TRUE, faclen = 0)
+
+# Test results on our subTesting data set:
+confusionMatrix(prediction1, subTesting$classe)
+```            
+> answer
+                  
+decision_tree_pred   dos normal probe   r2l   u2r
+            dos     8484    636   200    14     0
+            normal   364  12925   357   190     9
+            probe    619    337  1836     3     0
+            r2l        0      0     0     0     0
+            u2r        0      0     0     0     0
+> round(prop.table(answer,1)*100,2)
+                  
+decision_tree_pred   dos normal probe   r2l   u2r
+            dos    90.89   6.81  2.14  0.15  0.00
+            normal  2.63  93.36  2.58  1.37  0.07
+            probe  22.15  12.06 65.69  0.11  0.00
+            r2l                                  
+            u2r 
+            

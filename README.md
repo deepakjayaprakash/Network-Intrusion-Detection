@@ -25,8 +25,15 @@ The entire data and description can be found here: [click here](http://kdd.ics.u
  
 The attribute selection is the tricky part. Typical models like random forests, decision trees, etc take very long time to build the model. Hence, the number of attributes must be reduced. Moreover, there are many zero variance features which are removed in this step.   
   
-## Classifier build
+## Classifiers built
 
 - **Naive Bayes**
 - **Decision Trees**
 - **Random Forests**
+
+## Conclusions
+
+- The redundancy can be eliminated by finding out the *zero-variance* features and not including them in the training set as it leads to biased results. 
+- Once threshold efficiency is reached, any increase in the training set would only *over-fit* the data. Therefore the results would tend to deteriorate if training set is kept increasing.
+- Instead the number of attributes taken to build the model can be increased to improve the results.
+- Once trained, the model was also tested to find out how it would respond to attacks which are new. The models performed pretty well for even these un-trained new attack types. 
